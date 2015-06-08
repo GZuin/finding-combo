@@ -1,0 +1,56 @@
+#include <iostream>
+#include <fstream>
+#include <string>
+#include <cstdlib>
+#include <ctime>
+#include "_combodef.h"
+
+using namespace std;
+
+
+void run(Moveset ms, string outFile, int _weakDelay, int _medDelay, int _strgDelay, unsigned int _numInputs);
+// Generates a file with multiple possible inputs of a player for a given combo
+
+int main(int argc, char** argv) {
+	
+	if(argc<8) {
+		cout << "Incorrect number of arguments\n" << "<wkDelay> <mdDelay> <stgDelay> <numInputs> <outFile> -size|-custom <comboSize | customCombo>\n";
+		exit(-1);	
+	}
+
+	int _weakDelay = atoi(argv[1]); 
+	int _medDelay =  atoi(argv[2]);
+	int _strgDelay = atoi(argv[3]);
+	unsigned int _numInputs = atoi(argv[4]);
+	string outFile = argv[5];
+	string mode = argv[6];
+
+
+	if(mode=="-custom") //if a custom combo is being inserted
+	{	string customMove = argv[7];
+		Moveset ms(customMove);
+		ms.print();
+		run(ms,outFile,_weakDelay,_medDelay,_strgDelay, _numInputs);
+	}
+	else //if program should create a random combo
+	{	int _comboSize = atoi(argv[7]);
+		Moveset ms(_comboSize);
+		ms.print();
+		run(ms,outFile,_weakDelay,_medDelay,_strgDelay, _numInputs);
+	}
+	
+	return 0;
+}
+
+void run(Moveset ms, string outFile, int _weakDelay, int _medDelay, int _strgDelay, unsigned int _numInputs)
+{
+	ofstream output(outFile.c_str(), ofstream::out);
+
+	for(unsigned int i=1; i<=_numInputs; i++) { //Multiple possible inputs for the same combo
+		InputSet is(ms,_weakDelay,_medDelay, _strgDelay);
+		output << is.getInput();
+		if(i!=_numInputs) //if its not the last input possibility
+			output << '\n';
+	}
+	output.close();
+}
