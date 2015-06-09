@@ -1,12 +1,12 @@
 #include "_combodef.h"
 
 //Combo grammar. 9 directionals and 3 types of attack
-static char grammar[12] = {'1','2','3','4','5','6','7','8','9','W','M','S'};
+static char grammar[11] = {'1','2','3','4','5','6','8','-','L','M','H'};
 
 
 Move::Move() { //Move creator. A random directional and a random attack
-	dir = grammar[rand()%9];
-	atk = grammar[rand()%3+9];
+	dir = grammar[rand()%7];
+	atk = grammar[rand()%4+7];
 	
 	str_move.push_back(dir);
 	str_move.push_back(atk);
@@ -48,23 +48,25 @@ InputSet::InputSet(Moveset ms, unsigned int weakDelay, unsigned int medDelay, un
 	
 	inputList = "";
 	for(unsigned int i=0; i<ms.getComboSize(); i++) { 
-		inputList += ms.getMove(i).toStr();
-		int delay;
+		inputList += ms.getMove(i).toStr() + " ";
+		int delay=0;
 		
 		switch(ms.getMove(i).getMoveType()) {
-			case 'W':
+			case 'L':
 				delay = weakDelay;
 				break;
 			case 'M':
 				delay = medDelay;
 				break;
-			case 'S':
+			case 'H':
 				delay = strgDelay;
 				break;
 		}
-			
-		for(unsigned int i=1; i<delay; i++)
-			inputList.push_back(grammar[rand()%8]);
-			
+	
+		
+		for(unsigned int i=0; i<delay; i++){
+			Move m_temp;	
+			inputList+=m_temp.toStr() + " ";
+		}
 	}
 }
