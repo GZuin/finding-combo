@@ -1,20 +1,7 @@
 import sys
+import hmm_tables as table
 
-states = ('Combo', 'Free')
- 
 observations = []
- 
-start_probability = {'Combo': 0.5, 'Free': 0.5}
- 
-transition_probability = {
-   'Combo' : {'Combo': 0.6, 'Free': 0.4},
-   'Free' : {'Combo': 0.3, 'Free': 0.7},
-   }
- 
-emission_probability = {
-   'Combo' : {'9l': 0.1, '9m': 0.3, '9h': 0.6, '7l': 0.1, '7m': 0.3, '7h': 0.6, '1l': 0.5, '1m': 0.4, '1h': 0.1,'2l': 0.5, '2m': 0.4, '2h': 0.1, '3l': 0.5, '3m': 0.4, '3h': 0.1,'4l': 0.5, '4m': 0.4, '4h': 0.1,'5l': 0.5, '5m': 0.4, '5h': 0.1,'6l': 0.5, '6m': 0.4, '6h': 0.1, '8l': 0.5, '8m': 0.4, '8h': 0.1},
-   'Free' : {'9l': 0.1, '9m': 0.3, '9h': 0.6, '7l': 0.1, '7m': 0.3, '7h': 0.6, '1l': 0.1, '1m': 0.3, '1h': 0.6, '2l': 0.5, '2m': 0.4, '2h': 0.1, '3l': 0.5, '3m': 0.4, '3h': 0.1,'4l': 0.5, '4m': 0.4, '4h': 0.1,'5l': 0.5, '5m': 0.4, '5h': 0.1,'6l': 0.5, '6m': 0.4, '6h': 0.1, '8l': 0.5, '8m': 0.4, '8h': 0.1},
-   }
 
 def print_dptable(V):
     print "    ",
@@ -54,15 +41,25 @@ def viterbi(obs, states, start_p, trans_p, emit_p):
     return (prob, path[state])
 
 def example():
-    return viterbi(observations,
-                   states,
-                   start_probability,
-                   transition_probability,
-                   emission_probability)
+    if (observations[0] == "Free" or observations[0] == "Combo"):
+        return viterbi(observations,
+                   table.input_states,
+                   table.input_start_probability,
+                   table.input_transition_probability,
+                   table.input_emission_probability)
+    else:
+        return viterbi(observations,
+                   table.combo_states,
+                   table.combo_start_probability,
+                   table.combo_transition_probability,
+                   table.combo_emission_probability)
 
 def fill_observations():
     for n in range (1, len(sys.argv)):
         observations.append(sys.argv[n])
+
+def outside_observations(obs):
+    observation = obs
 
 if __name__ == '__main__':
 
