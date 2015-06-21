@@ -30,7 +30,7 @@ struct Transition {
 class HmmNode {
   int _time; // The time slot for this node.
   Hmm* _hmm; // The hmm that this node belongs to
-  unsigned long _state; // the state 
+  unsigned long _state; // the state
   vector<Transition*> _ins; // incoming transitions
   vector<Transition*> _outs;// out going transitions
   double _logAlpha; // alpha_t(s) = P(e_1:t, x_t=s);
@@ -137,7 +137,7 @@ public:
   /** Find the state sequence (a path) that has the maximum
       probability given the sequence of observations:
          max_{x_1:T} P(x_1:T | e_1:T);
-      The return value is the logarithm of the joint probability 
+      The return value is the logarithm of the joint probability
       of the state sequence and the observation sequence:
         log P(x_1:T, e_1:T)
   */
@@ -149,6 +149,7 @@ public:
   /** Train the model with the given observation sequences using the
       Baum-Welch algorithm. */
   void baumWelch(vector<vector<unsigned long>*>& sequences, int maxIterations);
+  void supervisedLearning(vector<vector<unsigned long>*>& obsSequences, vector<vector<unsigned long>*>& stsSequences);
 
 
   /** Conversion between the integer id and string form of states and

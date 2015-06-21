@@ -246,6 +246,121 @@ void Hmm::baumWelch(vector<vector<unsigned long>*>& sequences, int iterations)
   }
 }
 
+bool findValue(vector<unsigned long> vet, unsigned long val)
+{
+    for(unsigned int i=0; i<vet.size(); i++)
+    {   if(vet[i]==val)
+            return true;
+    }
+    return false;
+}
+
+void Hmm::supervisedLearning(vector<vector<unsigned long>*>& obsSequences, vector<vector<unsigned long>*>& stsSequences)
+{
+    vector<unsigned long> states;
+    vector<unsigned long> observations;
+
+    std::map<pair<unsigned long,unsigned long>,double> transitions;
+    std::map<pair<unsigned long,unsigned long>,double> emissions;
+
+    //Get the states and observations present in the training
+    for(unsigned int i=0; i<stsSequences.size(); i++)
+    {   vector<unsigned long>& sts = *stsSequences[i];
+        vector<unsigned long>& obs = *obsSequences[i];
+        for (unsigned int k=0; k<sts.size(); k++)
+        {   if(!findValue(states,sts[k]))
+                states.push_back(sts[k]);
+            if(!findValue(observations,obs[k]))
+                observations.push_back(obs[k]);
+        }
+    }
+
+    //Add special states INIT and FINAL
+    states.push_back(getId("INIT"));
+    states.push_back(getId("FINAL"));
+
+    //Create transition and emission map
+    for(unsigned int i=0; i<states.size(); i++)
+    {   //Transitions
+        for(unsigned int k=0; k<states.size(); k++)
+        {   pair<unsigned long, unsigned long> p;
+            p = std::make_pair(states[i], states[k]);
+            transitions.insert(pair<pair<unsigned long,unsigned long>,double>(p,0));
+        }
+
+        //Emissions
+        for(unsigned int k=0; k<observations.size(); k++)
+        {   pair<unsigned long, unsigned long> p;
+            p = std::make_pair(states[i], observations[k]);
+            emissions.insert(pair<pair<unsigned long,unsigned long>,double>(p,0));
+        }
+    }
+
+    //Fill transition and emission map with frequencies
+    for(unsigned int i=0; i<stsSequences.size(); i++)
+    {   vector<unsigned long>& obs = *obsSequences[i];
+        vector<unsigned long>& sts = *stsSequences[i];
+
+        for (unsigned int k=0; k<=obs.size(); k++)
+        {   pair<unsigned long, unsigned long> pt;
+            pair<unsigned long, unsigned long> pe;
+
+            if(k==0)
+                pt = std::make_pair(getId("INIT"),sts[k]);
+            else if (k==sts.size())
+                pt = std::make_pair(sts[k-1],getId("FINAL"));
+            else
+                pt = std::make_pair(sts[k-1],sts[k]);
+            pe = std::make_pair(sts[k],obs[k]);
+
+            transitions[pt]=transitions[pt]+1;
+            if(k<obs.size())
+                emissions[pe]=emissions[pe]+1;
+        }
+    }
+
+    //Turn frequencies to fractions
+    for(unsigned int i=0; i<states.size(); i++)
+    {   pair<unsigned long, unsigned long> pt;
+        pair<unsigned long, unsigned long> pe;
+        int totalTrans=0;
+        int totalEmis=0;
+
+        for(unsigned int k=0; k<states.size(); k++)
+        {   pt = std::make_pair(states[i],states[k]);
+            totalTrans += transitions[pt];
+        }
+
+        for(unsigned int k=0; k<states.size(); k++)
+        {   pt = std::make_pair(states[i],states[k]);
+            if(transitions[pt]!=0)
+                transitions[pt] = transitions[pt]/totalTrans;
+        }
+
+        for(unsigned int k=0; k<observations.size(); k++)
+        {   pe = std::make_pair(states[i],observations[k]);
+            totalEmis += emissions[pe];
+        }
+
+        for(unsigned int k=0; k<observations.size(); k++)
+        {   pe = std::make_pair(states[i],observations[k]);
+            if(emissions[pe]!=0)
+                emissions[pe] = emissions[pe]/totalEmis;
+        }
+    }
+
+    cerr << "TRANSITIONS\n";
+    for (map<pair<unsigned long,unsigned long>,double>::iterator it=transitions.begin(); it!=transitions.end(); ++it)
+        if(it->second != 0)
+            cerr << "\t" << getStr(it->first.first) << "\t" << getStr(it->first.second) << "\t" << it->second << '\n';
+
+    cerr << "\nEMISSIONS\n";
+    for (map<pair<unsigned long,unsigned long>,double>::iterator it=emissions.begin(); it!=emissions.end(); ++it)
+        if(it->second != 0)
+            cerr << "\t" <<getStr(it->first.first) << "\t" << getStr(it->first.second) << "\t" << it->second << '\n';
+}
+
+
 void Hmm::updateProbs(PseudoCounts& counts)
 {
   _transition.clear();
