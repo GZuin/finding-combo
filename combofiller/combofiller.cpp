@@ -12,13 +12,30 @@ void run(Moveset ms, string outFile, int _weakDelay, int _medDelay, int _strgDel
 // Generates a file with multiple possible inputs of a player for a given combo
 
 int main(int argc, char** argv) {
-	
-	if(argc<8) {
-		cout << "Incorrect number of arguments\n" << "<wkDelay> <mdDelay> <stgDelay> <numInputs> <outFile> -size|-custom <comboSize | customCombo>\n";
-		exit(-1);	
+	srand(time(NULL));
+	if(argc==4)	{
+        unsigned int _numInputs = atoi(argv[1]);
+        unsigned int _comboSize = atoi(argv[2]);
+		string outFile = argv[3];
+        ofstream output(outFile.c_str(), ofstream::out);
+
+        for(unsigned int i=0; i<_numInputs; i++) {
+            Moveset *ms;
+            ms = new Moveset (_comboSize);
+            for(unsigned int i=0; i<ms->getComboSize(); i++)
+                output << ms->getMove(i).toStr() << " ";
+            delete ms;
+            output << "\n";
+        }
+	    output.close();
+	    return 0;
+	}
+	else if(argc<8) {
+		cout << "Incorrect number of arguments (presented " << argc << ")\n<wkDelay> <mdDelay> <stgDelay> <numInputs> <outFile> -size|-custom <comboSize | customCombo>\n";
+		exit(-1);
 	}
 
-	int _weakDelay = atoi(argv[1]); 
+	int _weakDelay = atoi(argv[1]);
 	int _medDelay =  atoi(argv[2]);
 	int _strgDelay = atoi(argv[3]);
 	unsigned int _numInputs = atoi(argv[4]);
@@ -38,7 +55,7 @@ int main(int argc, char** argv) {
 		ms.print();
 		run(ms,outFile,_weakDelay,_medDelay,_strgDelay, _numInputs);
 	}
-	
+
 	return 0;
 }
 
