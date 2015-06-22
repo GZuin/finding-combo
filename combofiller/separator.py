@@ -7,7 +7,7 @@ outprefix = 0
 
 with open(inputfile) as f:
     for line in f:
-        path = str(outprefix) + ".txt"
+        path = "out\\" + str(outprefix) + ".txt"
         print path
         output = open(path, 'w');
         output.write(line)
