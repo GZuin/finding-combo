@@ -21,7 +21,6 @@ Move::Move(char a, char b) { //Move creator. A specific directional and a specif
 }
 
 Moveset::Moveset(unsigned int numMoves) { //Moveset creator. Contains 'numMoves' random moves
-	srand(time(0));
 	for (unsigned int i=0; i<numMoves; i++)
 	{	Move m;
 		combo.push_back(m);
