@@ -13,5 +13,6 @@ for i in range (0, int(endinputs)):
         for char in f:
             if(char != '\n'):
                 output.write(char)
+    output.write('\n')
 output.close()
            
