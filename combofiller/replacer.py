@@ -19,17 +19,17 @@ word=""
 output = open(outfile, 'w')
 
 for i in range (0, int(endinputs)):
-    inputfile = str(i) + ".txt"
+    inputfile = "preset_combos\\" + str(i) + ".txt"
     with open(inputfile) as f:
         for line in f:
             for char in line:
-                if(char != '\n' and char!=' '):
-                    word = word + char
-                else:
-                    if(word=="--"):
-                        word = array[random.randint(0,35)]    
-                    output.write(word + ' ')
+                word = word + char
+                if(word=="--"):
+                    word = array[random.randint(0,35)] 
+                if(char=='\n' or char==' '):
+                    output.write(word)
                     word=""
+    word=""
     output.write('\n')
 output.close()
            
