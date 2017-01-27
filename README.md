@@ -4,7 +4,7 @@ Implementation of the techniques described in the papers:
     http://homepages.dcc.ufmg.br/~gzuin/arquivos/artigos/attempting-discover-infinite-cor3.pdf
     http://homepages.dcc.ufmg.br/~gzuin/arquivos/pres_attempting-discover-infinite.pdf
  - "Discovering combos in fighting games trough evolutionary methods"
-    http://dl.acm.org/citation.cfm?id=2908908
+    http://dl.acm.org/citation.cfm?id=2908908 
     http://homepages.dcc.ufmg.br/~gzuin/arquivos/pres_discovering-combos-fighting.pdf
 	
 	
